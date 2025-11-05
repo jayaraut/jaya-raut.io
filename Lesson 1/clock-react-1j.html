@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>react exercise 1j</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #fce4ec, #e3f2fd, #e8f5e9);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .clock-container {
+            text-align: center;
+            background: #ffffffb3;
+            /* soft white with transparency */
+            padding: 50px 70px;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        h1 {
+            color: black;
+            /* soft lavender */
+            margin-bottom: 20px;
+            font-size: 34px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .time {
+            font-size: 52px;
+            font-weight: bold;
+            color: brown;
+            /* gentle pastel green */
+            letter-spacing: 3px;
+            text-shadow: 0 1px 3px rgba(102, 187, 106, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="js-container"></div>
+    <script src="https://unpkg.com/supersimpledev/react.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+    <script src="https://unpkg.com/supersimpledev/dayjs.js"></script>
+
+    <script type="text/babel">
+
+
+        const root = ReactDOM.createRoot(document.querySelector('.js-container'));
+        setInterval(() => {
+            const div = (
+                <div className="clock-container">
+                    <h1>Current Time</h1>
+                    <div className="time">{dayjs().format('HH:mm:ss')}</div>
+                </div>
+            );
+            root.render(div);
+        }, 1000);
+
+    </script>
+</body>
+
+</html>

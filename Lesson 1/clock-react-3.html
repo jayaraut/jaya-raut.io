@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>React Exercise 1j - Pastel Clock with Snake Border</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #f7f9fb, #eef6f6);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+    }
+
+    /* center container and make it a fixed max width so the SVG path scales predictably */
+    .js-container {
+      width: 420px;
+      max-width: 90%;
+    }
+
+    .clock-container {
+      position: relative; /* so the SVG overlay can be absolutely positioned */
+      text-align: center;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 42px 56px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(20, 30, 40, 0.08);
+      overflow: visible; /* allow arrow/circle outside if needed */
+    }
+
+    h1 {
+      color: #0f1720;
+      margin: 0 0 12px 0;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .time {
+      font-size: 48px;
+      font-weight: 700;
+      color: #2f5d3b; /* gentle green */
+      letter-spacing: 2px;
+    }
+
+    /* SVG overlay covers the whole container */
+    .border-snake {
+      position: absolute;
+      inset: 0;           /* fill the container */
+      width: 100%;
+      height: 100%;
+      pointer-events: none; /* non-interactive */
+      overflow: visible;
+    }
+
+    /* the dashed stroke (snake body) */
+    .snake-path {
+      fill: none;
+      stroke: #66bb6a;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      /* dashes sized to look like a segmented snake body */
+      stroke-dasharray: 8 8 8 8;
+      /* initial offset so dash animation is visible */
+      stroke-dashoffset: 0;
+      filter: drop-shadow(0 2px 2px rgba(50, 100, 50, 0.08));
+      opacity: 0.95;
+      /* make the dash move */
+      animation: dash-move 2.2s linear infinite;
+    }
+
+    /* little head circle styling */
+    .snake-head {
+      fill: #2e7d32;
+      stroke: rgba(0,0,0,0.06);
+      stroke-width: 0.5;
+      filter: drop-shadow(0 2px 4px rgba(46,125,50,0.12));
+    }
+
+    /* animate dash offset to create motion */
+    @keyframes dash-move {
+      from {
+        stroke-dashoffset: 0;
+      }
+      to {
+        stroke-dashoffset: -64; /* negative to move the dashes the other direction */
+      }
+    }
+
+    /* slightly shrink SVG so the stroke sits inside the rounded border */
+    .snake-svg-inner {
+      transform-origin: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="js-container">
+    <!-- React will render here -->
+    <div class="clock-container-root"></div>
+  </div>
+
+  <script src="https://unpkg.com/supersimpledev/react.js"></script>
+  <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+  <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+  <script src="https://unpkg.com/supersimpledev/dayjs.js"></script>
+
+  <script type="text/babel">
+    const { useEffect, useState } = React;
+
+    function ClockWithSnake() {
+      const [now, setNow] = useState(dayjs());
+
+      useEffect(() => {
+        const id = setInterval(() => setNow(dayjs()), 1000);
+        return () => clearInterval(id);
+      }, []);
+
+      /* We render an SVG path that matches a rounded rectangle inside the container.
+         The viewBox is 0 0 100 60 — path coordinates are normalized so the SVG scales with container.
+      */
+      return (
+        <div className="clock-container" role="region" aria-label="Clock">
+          {/* SVG overlay: path is a rounded rectangle scaled to the viewBox */}
+          <svg className="border-snake" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true">
+            {/* rounded rect path (clockwise) */}
+            <path
+              id="borderPath"
+              className="snake-path"
+              d="
+                M6 6
+                H94
+                A4 4 0 0 1 98 10
+                V50
+                A4 4 0 0 1 94 54
+                H6
+                A4 4 0 0 1 2 50
+                V10
+                A4 4 0 0 1 6 6
+                Z
+              "
+            />
+            {/* Move a small circle (head) along the same path; animateMotion uses the path's d */}
+            <circle r="1.8" className="snake-head">
+              <animateMotion dur="3s" repeatCount="indefinite" rotate="auto">
+                <mpath xlinkHref="#borderPath" />
+              </animateMotion>
+            </circle>
+          </svg>
+
+          {/* content */}
+          <h1>Current Time</h1>
+          <div className="time">{now.format('HH:mm:ss')}</div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.querySelector('.clock-container-root'));
+    root.render(<ClockWithSnake />);
+  </script>
+</body>
+
+</html>

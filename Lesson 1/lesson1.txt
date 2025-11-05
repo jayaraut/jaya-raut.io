@@ -6,3 +6,47 @@ Recommended: create a copy of react basics.html to do these exercises.
 My name is Jaya
 
 1c. Create the design on the right and display it in the wevsure using React.
+
+1d. You buy 1 pack of socks for $10 and 2 T-shirts for $8 each. Using JS, calculate the total cost of this order, save it in a variable named productCost, 
+and display it in the Console.
+
+1e. Continuing from 1d, insert the productCost variable into a paragraph element, create the design below and display it on the website.
+
+Product cost:$_
+
+Note: replace _ and insert the productCost variable
+
+Challenge Exercises
+1f. Continuing from le, let's pretend the shipping cost is $5. Save this in a variable named shippingCost, calculate the total cost using JavaScript 
+(productCost + shippingCost), and display the results on the website using the design below:
+
+Product cost: $_A
+Shipping cost: $_B
+Total cost: $_C_
+Place your order
+
+Note: replace _A_ and insert productCost, replace _B_ and insert shippingCost, replace _C_ and insert the total cost.
+
+1g. We're going to load the DayJS external library on the website (DayJS is an external library that helps us work with dates easier).
+• To load DayJS, create a <script> above your code, and load the URL: https://unpkg.com/supersimpledev/dayjs.js
+• After DayJS is loaded, use the code: dayjs().format('MMMM D') to get the current date. Display
+this result in the console.
+
+Console: August 28
+
+1h. Continuing from 1g, insert the date in a paragraph element, and display it on the website in this format:
+Console: Today is August 28
+
+1i. Using DayJS, get the current time using dayjs().format('HH:mm:ss') and display it on the website in this format:
+
+    Current time: 21:39:28
+
+1j. We'll create a clock. Continue from exercise 1i. and do these steps: 
+• First, instead of doing ReactDOM.createRoot(...).render(...); 
+  save the root in a variable const root = ReactDOM.createRoot(...); 
+  and then do root.render(.......);
+• Use the JavaScript code: setInterval(() => {}, 1000);
+  (replace ... with some code and it will run this code every second).
+• Inside setInterval, display the current time
+  on the website using root.render(...); 
+  (setInterval will run this code every second and this will create a clock).
