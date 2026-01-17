@@ -962,23 +962,75 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .container {
+        padding: 10px;
+        max-width: 100%;
+    }
+
     .header {
         flex-direction: column;
         text-align: center;
+        padding: 20px 15px;
     }
 
     .profile-section {
         flex-direction: column;
         text-align: center;
+        gap: 15px;
     }
 
     .profile-info {
         text-align: center;
     }
 
+    .profile-info h1 {
+        font-size: 1.8em;
+    }
+
     .stats-section {
         width: 100%;
         justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        min-width: 120px;
+    }
+
+    /* Main content layout */
+    .main-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .calendar-sidebar {
+        width: 100%;
+        order: 2;
+    }
+
+    .planner-section {
+        width: 100%;
+        order: 1;
+    }
+
+    /* Calendar widget */
+    .calendar-widget {
+        padding: 15px;
+    }
+
+    .calendar-grid {
+        gap: 5px;
+    }
+
+    .calendar-day {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9em;
+    }
+
+    /* Day planner */
+    .day-planner {
+        padding: 20px 15px;
     }
 
     .date-selector {
@@ -988,13 +1040,139 @@ body {
 
     .day-stats {
         flex-direction: column;
+        gap: 15px;
     }
 
     .task-input-container {
         flex-direction: column;
+        gap: 10px;
+    }
+
+    .task-input {
+        width: 100%;
     }
 
     .add-task-btn {
         width: 100%;
+    }
+
+    /* Task items */
+    .task-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .task-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    /* LeetCode tracker */
+    .leetcode-dialog {
+        width: 95%;
+        max-width: 95%;
+        max-height: 85vh;
+        margin: 20px auto;
+    }
+
+    .leetcode-header {
+        padding: 15px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .leetcode-header h2 {
+        font-size: 1.5em;
+    }
+
+    .leetcode-day-item {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .day-info {
+        width: 100%;
+    }
+
+    .day-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .question-count {
+        width: 70px;
+    }
+
+    /* LeetCode button */
+    .leetcode-button {
+        bottom: 20px;
+        right: 20px;
+        left: auto;
+        padding: 14px 24px;
+        font-size: 0.95em;
+        z-index: 1001;
+    }
+
+    /* Toast */
+    .toast {
+        width: 90%;
+        left: 5%;
+        font-size: 0.9em;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+    .profile-info h1 {
+        font-size: 1.5em;
+    }
+
+    .stat-card {
+        min-width: 100px;
+        padding: 8px 12px;
+    }
+
+    .stat-value {
+        font-size: 1.3em;
+    }
+
+    .calendar-day {
+        width: 30px;
+        height: 30px;
+        font-size: 0.85em;
+    }
+
+    .task-item {
+        font-size: 0.95em;
+    }
+
+    .leetcode-dialog {
+        width: 100%;
+        max-height: 90vh;
+        margin: 10px auto;
+        border-radius: 12px;
+    }
+
+    .leetcode-header h2 {
+        font-size: 1.3em;
+    }
+
+    .question-count {
+        width: 60px;
+    }
+
+    .count-label {
+        font-size: 0.85em;
+    }
+
+    .leetcode-button {
+        bottom: 15px;
+        right: 15px;
+        padding: 12px 18px;
+        font-size: 0.9em;
+        box-shadow: 0 4px 15px rgba(255, 161, 22, 0.5);
     }
 }
