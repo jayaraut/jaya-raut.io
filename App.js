@@ -1,43 +1,84 @@
 /**
  * Main App Component
- * Root component that manages application state
+ * Root component that manages application state with Firebase sync
  */
 function App() {
     const { useState, useEffect, useMemo } = React;
     
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [tasks, setTasks] = useState(() => {
-        const savedTasks = localStorage.getItem('dayPlannerTasks');
-        return savedTasks ? JSON.parse(savedTasks) : [];
-    });
-    const [profileImage, setProfileImage] = useState(() => {
-        return localStorage.getItem('profileImage') || '';
-    });
+    const [tasks, setTasks] = useState([]);
+    const [profileImage, setProfileImage] = useState('');
     const [toast, setToast] = useState({ show: false, message: '' });
-    const [leetcodeTasks, setLeetcodeTasks] = useState(() => {
-        const saved = localStorage.getItem('leetcodeTasks');
-        return saved ? JSON.parse(saved) : [];
-    });
+    const [leetcodeTasks, setLeetcodeTasks] = useState([]);
     const [isLeetCodeOpen, setIsLeetCodeOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSignInOpen, setIsSignInOpen] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
-    // Save tasks to localStorage whenever they change
-    useEffect(() => {
-        localStorage.setItem('dayPlannerTasks', JSON.stringify(tasks));
-    }, [tasks]);
+    // User ID for Firebase (you can change this or make it dynamic)
+    const userId = 'jaya-raut'; // Use a unique identifier
 
-    // Save profile image to localStorage whenever it changes
+    // Listen to auth state changes
     useEffect(() => {
-        if (profileImage) {
-            localStorage.setItem('profileImage', profileImage);
-        } else {
-            localStorage.removeItem('profileImage');
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            const wasAdmin = isAdmin;
+            setIsAdmin(!!user);
+            
+            if (user && !wasAdmin) {
+                showToast('✅ Signed in as admin');
+            } else if (!user && wasAdmin) {
+                showToast('👋 Signed out. Portfolio is read-only');
+            }
+        });
+        return () => unsubscribe();
+    }, [isAdmin]);
+
+    // Load data from Firebase on mount
+    useEffect(() => {
+        const userRef = database.ref(`users/${userId}`);
+        
+        userRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                setTasks(data.tasks || []);
+                setLeetcodeTasks(data.leetcodeTasks || []);
+                setProfileImage(data.profileImage || '');
+            }
+            setIsLoading(false);
+        });
+
+        // Cleanup listener on unmount
+        return () => userRef.off();
+    }, []);
+
+    // Sync tasks to Firebase
+    useEffect(() => {
+        if (!isLoading && tasks.length >= 0 && isAdmin) {
+            database.ref(`users/${userId}/tasks`).set(tasks);
         }
-    }, [profileImage]);
+    }, [tasks, isLoading, isAdmin]);
 
-    // Save LeetCode tasks to localStorage
+    // Sync profile image to Firebase
     useEffect(() => {
-        localStorage.setItem('leetcodeTasks', JSON.stringify(leetcodeTasks));
-    }, [leetcodeTasks]);
+        if (!isLoading && isAdmin) {
+            database.ref(`users/${userId}/profileImage`).set(profileImage || '');
+        }
+    }, [profileImage, isLoading, isAdmin]);
+
+    // Sync LeetCode tasks to Firebase
+    useEffect(() => {
+        if (!isLoading && leetcodeTasks.length >= 0 && isAdmin) {
+            database.ref(`users/${userId}/leetcodeTasks`).set(leetcodeTasks);
+        }
+    }, [leetcodeTasks, isLoading, isAdmin]);
+
+    /**
+     * Show toast notification
+     */
+    const showToast = (message) => {
+        setToast({ show: true, message });
+        setTimeout(() => setToast({ show: false, message: '' }), 3000);
+    };
 
     /**
      * Helper function to format date in local timezone
@@ -306,6 +347,30 @@ function App() {
         }
     };
 
+    /**
+     * Handle data import from sync (deprecated - using Firebase now)
+     */
+    const handleDataImport = (data) => {
+        if (data.tasks) setTasks(data.tasks);
+        if (data.leetcodeTasks) setLeetcodeTasks(data.leetcodeTasks);
+        if (data.profileImage) {
+            setProfileImage(data.profileImage);
+        } else {
+            setProfileImage('');
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                <div style={{ textAlign: 'center', color: '#667eea' }}>
+                    <div style={{ fontSize: '2em', marginBottom: '10px' }}>⏳</div>
+                    <div>Loading your data...</div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="container">
             {toast.show && (
@@ -313,6 +378,7 @@ function App() {
                     {toast.message}
                 </div>
             )}
+            
             <Header 
                 profileImage={profileImage}
                 streak={calculateStreak}
@@ -338,6 +404,57 @@ function App() {
                     />
                 </div>
             </div>
+
+            {/* Umbrella trigger area */}
+            <div 
+                className="admin-umbrella-trigger"
+                onMouseEnter={() => {
+                    document.querySelector('.umbrella-canopy')?.classList.add('open');
+                }}
+                onMouseLeave={() => {
+                    document.querySelector('.umbrella-canopy')?.classList.remove('open');
+                }}
+                onClick={() => {
+                    // Mobile: open on click
+                    const canopy = document.querySelector('.umbrella-canopy');
+                    if (canopy?.classList.contains('open')) {
+                        if (isAdmin) {
+                            window.signOut();
+                        } else {
+                            setIsSignInOpen(true);
+                        }
+                    } else {
+                        canopy?.classList.add('open');
+                    }
+                }}
+            >
+                {/* Umbrella Canopy */}
+                <div 
+                    className="umbrella-canopy"
+                    title={isAdmin ? "Click to Sign Out" : "Click to Sign In"}
+                >
+                    {/* Scalloped semicircle segments */}
+                    <div className="umbrella-segment segment-1"></div>
+                    <div className="umbrella-segment segment-2"></div>
+                    <div className="umbrella-segment segment-3"></div>
+                    <div className="umbrella-segment segment-4"></div>
+                    <div className="umbrella-segment segment-5"></div>
+                    <div className="umbrella-segment segment-6"></div>
+                    
+                    {/* Elegant text indicator */}
+                    <div className="umbrella-label">
+                        <span className="umbrella-main-text">{isAdmin ? 'Admin' : 'Sign In'}</span>
+                        <span className="umbrella-sub-text">{isAdmin ? 'Sign Out' : 'Click Here'}</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Sign In Dialog */}
+            <SignIn 
+                isOpen={isSignInOpen}
+                onClose={() => setIsSignInOpen(false)}
+                onSignIn={() => showToast('Successfully signed in!')}
+            />
 
             <button 
                 className="leetcode-button" 
