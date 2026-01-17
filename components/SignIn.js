@@ -56,25 +56,25 @@ function SignIn({ isOpen, onClose, onSignIn }) {
             
             switch (err.code) {
                 case 'auth/user-not-found':
-                    setError('❌ No account found with this email. Please create an account in Firebase Console first.');
+                    setError('No account found with this email. Please create an account in Firebase Console first.');
                     break;
                 case 'auth/wrong-password':
-                    setError('❌ Incorrect password. Please try again.');
+                    setError('Incorrect password. Please try again.');
                     break;
                 case 'auth/invalid-email':
-                    setError('❌ Invalid email address format.');
+                    setError('Invalid email address format.');
                     break;
                 case 'auth/too-many-requests':
-                    setError('❌ Too many failed attempts. Please wait a few minutes and try again.');
+                    setError('Too many failed attempts. Please wait a few minutes and try again.');
                     break;
                 case 'auth/invalid-credential':
-                    setError('❌ Invalid credentials. Make sure you created this account in Firebase Console.');
+                    setError('Invalid credentials. Make sure you created this account in Firebase Console.');
                     break;
                 case 'auth/configuration-not-found':
-                    setError('❌ Email/Password authentication not enabled. Enable it in Firebase Console → Authentication → Sign-in method.');
+                    setError('Email/Password authentication not enabled. Enable it in Firebase Console → Authentication → Sign-in method.');
                     break;
                 default:
-                    setError(`❌ Sign in failed: ${err.message}`);
+                    setError(`Sign in failed: ${err.message}`);
             }
         } finally {
             setIsLoading(false);

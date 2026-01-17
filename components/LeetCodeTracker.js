@@ -15,7 +15,9 @@ function LeetCodeTracker({
     leetcodeTasks, 
     onToggleTask, 
     onUpdateCount,
-    leetcodeStreak 
+    leetcodeStreak,
+    isAdmin,
+    showToast 
 }) {
     const [selectedDate, setSelectedDate] = React.useState(new Date());
     const scrollContainerRef = React.useRef(null);
@@ -73,6 +75,11 @@ function LeetCodeTracker({
     };
 
     const handleCheckboxClick = (date, task) => {
+        if (!isAdmin) {
+            showToast('Please sign in to update LeetCode tasks');
+            return;
+        }
+        
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const checkDate = new Date(date);
@@ -93,6 +100,10 @@ function LeetCodeTracker({
     };
 
     const handleCountChange = (date, newCount) => {
+        if (!isAdmin) {
+            return;
+        }
+        
         const dateStr = formatDateStr(date);
         const task = getTaskForDate(date);
         
@@ -183,8 +194,9 @@ function LeetCodeTracker({
                                     <button 
                                         className={`checkbox-btn ${task?.completed ? 'checked' : ''} ${isFuture ? 'disabled' : ''}`}
                                         onClick={() => !isFuture && handleCheckboxClick(date, task)}
-                                        disabled={isFuture}
-                                        title={isFuture ? 'Cannot complete future tasks' : 'Mark as completed'}
+                                        disabled={isFuture || !isAdmin}
+                                        title={isFuture ? 'Cannot complete future tasks' : (!isAdmin ? 'Sign in to mark complete' : 'Mark as completed')}
+                                        style={{ cursor: (isFuture || !isAdmin) ? 'not-allowed' : 'pointer', opacity: !isAdmin ? 0.7 : 1 }}
                                     >
                                         {task?.completed ? '✓' : '○'}
                                     </button>
@@ -198,8 +210,9 @@ function LeetCodeTracker({
                                         value={task?.questionCount || ''}
                                         onChange={(e) => handleCountChange(date, e.target.value)}
                                         onKeyPress={(e) => handleCountKeyPress(e, date, task)}
-                                        disabled={isFuture}
-                                        title="Number of questions solved"
+                                        disabled={isFuture || !isAdmin}
+                                        title={!isAdmin ? 'Sign in to edit' : 'Number of questions solved'}
+                                        style={{ cursor: !isAdmin ? 'not-allowed' : 'text', opacity: !isAdmin ? 0.7 : 1 }}
                                     />
                                     <span className="count-label">problems</span>
                                 </div>

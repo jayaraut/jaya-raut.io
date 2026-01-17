@@ -17,7 +17,9 @@ function DayPlanner({
     onToggleTask,
     onAddTask, 
     onDeleteTask,
-    dayScore 
+    dayScore,
+    isAdmin,
+    showToast 
 }) {
     const [taskText, setTaskText] = React.useState('');
 
@@ -39,6 +41,10 @@ function DayPlanner({
     });
 
     const handleAddTask = () => {
+        if (!isAdmin) {
+            showToast('Please sign in to add tasks');
+            return;
+        }
         if (taskText.trim()) {
             onAddTask({
                 id: Date.now(),
@@ -87,13 +93,19 @@ function DayPlanner({
                 <div className="task-input-container">
                     <input 
                         type="text" 
-                        placeholder="Add a task you completed or plan to do..."
+                        placeholder={isAdmin ? "Add a task you completed or plan to do..." : "Sign in to add tasks"}
                         value={taskText}
                         onChange={(e) => setTaskText(e.target.value)}
                         onKeyPress={handleKeyPress}
                         className="task-input"
+                        disabled={!isAdmin}
                     />
-                    <button onClick={handleAddTask} className="add-task-btn">
+                    <button 
+                        onClick={handleAddTask} 
+                        className="add-task-btn"
+                        disabled={!isAdmin}
+                        style={{ opacity: isAdmin ? 1 : 0.5, cursor: isAdmin ? 'pointer' : 'not-allowed' }}
+                    >
                         + Add Task
                     </button>
                 </div>
@@ -111,7 +123,14 @@ function DayPlanner({
                             <li key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
                                 <button 
                                     className="task-checkbox"
-                                    onClick={() => onToggleTask(task.id)}
+                                    onClick={() => {
+                                        if (!isAdmin) {
+                                            showToast('Please sign in to toggle tasks');
+                                            return;
+                                        }
+                                        onToggleTask(task.id);
+                                    }}
+                                    style={{ cursor: isAdmin ? 'pointer' : 'not-allowed', opacity: isAdmin ? 1 : 0.7 }}
                                 >
                                     {task.completed ? '✓' : '○'}
                                 </button>
@@ -119,12 +138,14 @@ function DayPlanner({
                                     <span className="task-text">{task.text}</span>
                                     <span className="task-points">+{task.points} pts</span>
                                 </div>
-                                <button 
-                                    className="task-delete"
-                                    onClick={() => onDeleteTask(task.id)}
-                                >
-                                    🗑️
-                                </button>
+                                {isAdmin && (
+                                    <button 
+                                        className="task-delete"
+                                        onClick={() => onDeleteTask(task.id)}
+                                    >
+                                        🗑️
+                                    </button>
+                                )}
                             </li>
                         ))}
                     </ul>

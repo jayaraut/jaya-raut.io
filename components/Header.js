@@ -7,19 +7,35 @@
  * @param {number} totalScore - Total points earned
  * @param {Function} onImageUpload - Handler for image upload
  */
-function Header({ profileImage, streak, totalScore, onImageUpload }) {
+function Header({ profileImage, streak, totalScore, onImageUpload, isAdmin, showToast }) {
     const fileInputRef = React.useRef(null);
 
     const handleImageClick = () => {
+        if (!isAdmin) {
+            showToast('Please sign in to upload a profile image');
+            return;
+        }
         fileInputRef.current?.click();
     };
 
     const handleFileChange = (e) => {
         const file = e.target.files?.[0];
         if (file) {
+            // Confirm before uploading
+            const isFirstUpload = !profileImage;
+            const message = isFirstUpload 
+                ? 'Upload this image as your profile picture? (Type "yes" to confirm)' 
+                : 'Replace your current profile picture? (Type "yes" to confirm)';
+            
+            const confirmation = window.prompt(message);
+            if (confirmation?.toLowerCase() !== 'yes') {
+                // Reset file input
+                e.target.value = '';
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = (event) => {
-                const isFirstUpload = !profileImage;
                 onImageUpload(event.target.result, isFirstUpload ? 'Image uploaded successfully!' : 'New image uploaded successfully!');
             };
             reader.readAsDataURL(file);
@@ -38,18 +54,24 @@ function Header({ profileImage, streak, totalScore, onImageUpload }) {
         if (password === '13031996') {
             onImageUpload(null, 'Image removed successfully!');
         } else if (password !== null) {
-            alert('Incorrect password! Image not removed.');
+            showToast('Incorrect password! Image not removed.');
         }
     };
 
     return (
         <div className="header">
             <div className="profile-section">
-                <div className="profile-image-container" onClick={handleImageClick}>
+                <div 
+                    className="profile-image-container" 
+                    onClick={handleImageClick}
+                    style={{ cursor: isAdmin ? 'pointer' : 'default' }}
+                >
                     {profileImage ? (
                         <>
                             <img src={profileImage} alt="Jaya Raut" className="profile-image" />
-                            <button className="remove-image-btn" onClick={handleRemoveImage} title="Remove image">✏️</button>
+                            {isAdmin && (
+                                <button className="remove-image-btn" onClick={handleRemoveImage} title="Remove image">✏️</button>
+                            )}
                         </>
                     ) : (
                         <img 
@@ -58,7 +80,7 @@ function Header({ profileImage, streak, totalScore, onImageUpload }) {
                             className="profile-image" 
                         />
                     )}
-                    <div className="upload-overlay">📷</div>
+                    {isAdmin && <div className="upload-overlay">📷</div>}
                     <input 
                         ref={fileInputRef}
                         type="file" 

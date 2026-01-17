@@ -25,9 +25,9 @@ function App() {
             setIsAdmin(!!user);
             
             if (user && !wasAdmin) {
-                showToast('✅ Signed in as admin');
+                showToast('Signed in as admin');
             } else if (!user && wasAdmin) {
-                showToast('👋 Signed out. Portfolio is read-only');
+                showToast('Signed out. Portfolio is read-only');
             }
         });
         return () => unsubscribe();
@@ -384,6 +384,8 @@ function App() {
                 streak={calculateStreak}
                 totalScore={calculateTotalScore}
                 onImageUpload={handleImageUpload}
+                isAdmin={isAdmin}
+                showToast={showToast}
             />
             <div className="main-content">
                 <div className="calendar-sidebar">
@@ -401,6 +403,8 @@ function App() {
                         onAddTask={handleAddTask}
                         onDeleteTask={handleDeleteTask}
                         dayScore={calculateDayScore}
+                        isAdmin={isAdmin}
+                        showToast={showToast}
                     />
                 </div>
             </div>
@@ -474,6 +478,8 @@ function App() {
                 onToggleTask={handleLeetCodeToggle}
                 onUpdateCount={handleLeetCodeCountUpdate}
                 leetcodeStreak={calculateLeetCodeStreak}
+                isAdmin={isAdmin}
+                showToast={showToast}
             />
         </div>
     );
