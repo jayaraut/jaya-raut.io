@@ -20,9 +20,13 @@ function DayPlanner({
     dayScore 
 }) {
     const [taskText, setTaskText] = React.useState('');
-    const [showCalendar, setShowCalendar] = React.useState(false);
 
-    const dateStr = selectedDate.toISOString().split('T')[0];
+    // Create date string in local timezone to avoid UTC conversion issues
+    const year = selectedDate.getFullYear();
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    
     const dayTasks = tasks.filter(task => task.date === dateStr);
     const completedCount = dayTasks.filter(task => task.completed).length;
     const totalCount = dayTasks.length;
@@ -58,12 +62,6 @@ function DayPlanner({
             <div className="planner-header">
                 <div className="date-selector">
                     <h2>{formattedDate}</h2>
-                    <button 
-                        className="calendar-button"
-                        onClick={() => setShowCalendar(!showCalendar)}
-                    >
-                        📅 {showCalendar ? 'Hide' : 'Change Date'}
-                    </button>
                 </div>
                 <div className="day-stats">
                     <div className="progress-info">
@@ -83,20 +81,6 @@ function DayPlanner({
                     </div>
                 </div>
             </div>
-
-            {showCalendar && (
-                <div className="date-picker-container">
-                    <input 
-                        type="date" 
-                        className="date-picker"
-                        value={dateStr}
-                        onChange={(e) => {
-                            onDateChange(new Date(e.target.value + 'T00:00:00'));
-                            setShowCalendar(false);
-                        }}
-                    />
-                </div>
-            )}
 
             <div className="task-input-section">
                 <h3>What did you do today?</h3>
