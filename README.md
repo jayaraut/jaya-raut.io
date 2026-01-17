@@ -2,6 +2,10 @@
 
 A comprehensive day planner and task tracker with scoring system and streak tracking built with React.
 
+## 🌐 Live Demo
+
+**[View Live Portfolio](https://jayaraut.github.io/jaya-raut.io/)**
+
 ## Project Structure
 
 ```
